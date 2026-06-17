@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benchmarking — Vagas de Inovação Jurídica</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--blue:#00b2ff;--graphite:#444444;--gray:#b2bab9;--red:#fc745c;--green:#d0ffc2;--yellow:#fff6d3;--bg:#f5f6f7;--surface:#ffffff;--text:#1a1a1a;--muted:#6b7280;--border:#e5e7eb;--radius:12px;--radius-sm:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6}
+.skip-link{position:absolute;top:-100px;left:1rem;background:var(--blue);color:#fff;padding:8px 16px;border-radius:var(--radius-sm);font-weight:500;z-index:9999;transition:top .2s}
+.skip-link:focus{top:1rem}
+header{background:var(--graphite);color:#fff;padding:0 2rem;position:sticky;top:0;z-index:100}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:15px;font-weight:600;color:#fff}.logo span{color:var(--blue)}
+nav{display:flex;gap:24px}
+nav a{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;transition:color .15s}
+nav a:hover,nav a:focus{color:#fff}
+nav a:focus-visible{outline:2px solid var(--blue);outline-offset:4px;border-radius:4px}
+.hero{background:var(--graphite);color:#fff;padding:4rem 2rem 3rem}
+.hero-inner{max-width:1200px;margin:0 auto}
+.hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:600;line-height:1.25;margin-bottom:.75rem}
+.hero h1 span{color:var(--blue)}
+.hero p{font-size:15px;color:rgba(255,255,255,.7);max-width:560px;margin-bottom:1.5rem}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);font-size:12px;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.15)}
+main{max-width:1200px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.section-title{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.filters-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.filter-group{display:flex;align-items:center;gap:8px}
+.filter-group label{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+select{font-size:13px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,178,255,.15)}
+.btn-reset{font-size:12px;padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;margin-left:auto}
+.btn-reset:hover{background:var(--bg);color:var(--text)}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.25rem}
+.kpi-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:600;color:var(--text);line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--blue)}
+.charts-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem}
+.card-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:12px}
+.chart-wrap{position:relative;width:100%}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.5rem}
+.table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.table-count{font-size:12px;color:var(--muted);background:var(--bg);padding:3px 10px;border-radius:20px}
+.search-wrap{position:relative}
+.search-wrap input{font-size:13px;padding:7px 12px 7px 32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);color:var(--text);width:220px}
+.search-wrap input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,178,255,.15)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.table-responsive{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--text)}
+th .sort-icon{margin-left:4px;opacity:.4}
+th.sorted .sort-icon{opacity:1;color:var(--blue)}
+td{padding:9px 10px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f9fafb}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.badge-nac{background:#d0ffc2;color:#1a6b00}
+.badge-int{background:#cce9ff;color:#004a80}
+.badge-vaga{background:#fff6d3;color:#7a5700}
+.badge-cargo{background:#ffe0db;color:#8b1a00}
+.td-cargo{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.td-atuacao{font-size:11px;color:var(--muted);max-width:200px;line-height:1.4}
+.pagination{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px}
+.page-info{font-size:12px;color:var(--muted)}
+.page-btns{display:flex;gap:6px}
+.page-btns button{font-size:12px;padding:5px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer}
+.page-btns button:hover:not(:disabled){background:var(--bg)}
+.page-btns button:disabled{opacity:.4;cursor:default}
+.loading{display:flex;align-items:center;gap:10px;padding:2rem 0;font-size:13px;color:var(--muted)}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{background:var(--graphite);color:rgba(255,255,255,.6);text-align:center;padding:1.5rem;font-size:12px}
+footer strong{color:#fff}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.charts-2{grid-template-columns:1fr}}
+@media(max-width:600px){.kpi-grid{grid-template-columns:repeat(2,1fr)}nav{display:none}.hero{padding:2.5rem 1.25rem 2rem}main{padding:1.25rem 1rem 3rem}}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Ir para o conteúdo principal</a>
+
+<header role="banner">
+  <div class="header-inner">
+    <div class="logo">Legal<span>Bench</span></div>
+    <nav aria-label="Navegação principal">
+      <a href="#visao-geral">Visão geral</a>
+      <a href="#graficos">Gráficos</a>
+      <a href="#registros">Registros</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" role="region" aria-label="Cabeçalho">
+  <div class="hero-inner">
+    <h1>Benchmarking de <span>Vagas de Inovação</span> Jurídica</h1>
+    <p>Mapeamento de vagas abertas e cargos ocupados em inovação, legal tech e knowledge management em escritórios nacionais e internacionais.</p>
+    <div class="hero-tags">
+      <span class="tag">Legal Operations</span>
+      <span class="tag">Inovação / Legal Tech</span>
+      <span class="tag">Knowledge Management</span>
+      <span class="tag">Transformação Digital</span>
+      <span class="tag">IA Jurídica</span>
+    </div>
+  </div>
+</div>
+
+<main id="main-content">
+
+  <div id="loading-msg" class="loading">
+    <svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00b2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+    Carregando dados da planilha…
+  </div>
+
+  <div id="dashboard" style="display:none">
+
+    <section aria-label="Filtros" style="margin-bottom:0">
+      <div class="filters-wrap">
+        <div class="filter-group"><label for="fSecao">Seção</label>
+          <select id="fSecao" onchange="render()">
+            <option value="all">Todas</option>
+            <option value="VAGA NACIONAL">Vaga nacional</option>
+            <option value="VAGA INTERNACIONAL">Vaga internacional</option>
+            <option value="CARGO OCUPADO NACIONAL">Cargo nacional</option>
+            <option value="CARGO OCUPADO INTERNACIONAL">Cargo internacional</option>
+          </select>
+        </div>
+        <div class="filter-group"><label for="fArea">Área</label>
+          <select id="fArea" onchange="render()">
+            <option value="all">Todas</option>
+            <option value="inovacao">Inovação / Legal Tech / IA</option>
+            <option value="legalops">Legal Operations / Processos</option>
+            <option value="conhecimento">Gestão do Conhecimento</option>
+            <option value="transformacao">Transformação / Change</option>
+          </select>
+        </div>
+        <div class="filter-group"><label for="fPais">País</label>
+          <select id="fPais" onchange="render()">
+            <option value="all">Todos</option>
+            <option value="Brasil">Brasil</option>
+            <option value="EUA">EUA</option>
+            <option value="Reino Unido">Reino Unido</option>
+            <option value="Espanha">Espanha</option>
+            <option value="Luxemburgo">Luxemburgo</option>
+          </select>
+        </div>
+        <button class="btn-reset" onclick="resetFilters()">Limpar filtros</button>
+      </div>
+    </section>
+
+    <section id="visao-geral" style="margin-bottom:1.5rem">
+      <h2 class="section-title">Visão geral</h2>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Total de registros</div><div class="kpi-value" id="k1">—</div><div class="kpi-sub" id="k1s"></div></div>
+        <div class="kpi"><div class="kpi-label">Vagas abertas</div><div class="kpi-value" id="k2">—</div><div class="kpi-sub" id="k2s"></div></div>
+        <div class="kpi"><div class="kpi-label">Cargos ocupados</div><div class="kpi-value" id="k3">—</div><div class="kpi-sub" id="k3s"></div></div>
+        <div class="kpi"><div class="kpi-label">Escritórios registrados</div><div class="kpi-value" id="k5">—</div><div class="kpi-sub" id="k5s"></div></div>
+        <div class="kpi"><div class="kpi-label">Países mapeados</div><div class="kpi-value" id="k4">—</div><div class="kpi-sub" id="k4s"></div></div>
+      </div>
+    </section>
+
+    <section id="graficos">
+      <h2 class="section-title">Análise visual</h2>
+      <div class="charts-2">
+        <div class="card">
+          <div class="card-title">Distribuição por seção</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="cSecao"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Top áreas de atuação</div>
+          <div class="legend" id="lgArea"></div>
+          <div class="chart-wrap" style="height:170px"><canvas id="cArea"></canvas></div>
+        </div>
+      </div>
+      <div class="charts-2">
+        <div class="card">
+          <div class="card-title">Distribuição por país</div>
+          <div class="legend" id="lgPais"></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="cPais"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Níveis de seniority</div>
+          <div class="legend" id="lgNivel"></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="cNivel"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="registros">
+      <h2 class="section-title">Registros detalhados</h2>
+      <div class="table-card">
+        <div class="table-header">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <h3 style="font-size:13px;font-weight:600;color:var(--muted)">Todos os registros</h3>
+            <span class="table-count" id="countLabel" aria-live="polite"></span>
+          </div>
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="search" id="searchInput" placeholder="Buscar cargo, escritório..." aria-label="Buscar nos registros" oninput="render()">
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th onclick="sortBy('secao')">Seção <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('escritorio')">Escritório <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('pais')">País <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('cargo')">Cargo <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('area')">Área <span class="sort-icon">↕</span></th>
+                <th onclick="sortBy('nivel')">Nível <span class="sort-icon">↕</span></th>
+                <th>Tipo</th>
+                <th>Atuação</th>
+              </tr>
+            </thead>
+            <tbody id="tBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="page-info" id="pageInfo" aria-live="polite"></span>
+          <div class="page-btns">
+            <button id="btnPrev" onclick="changePage(-1)" disabled>← Anterior</button>
+            <button id="btnNext" onclick="changePage(1)">Próxima →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer role="contentinfo">
+  <p>Benchmarking de Vagas de Inovação Jurídica — <strong>dados atualizados via Google Sheets</strong></p>
+</footer>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQgqCfAJfZ-vZP_7b_Knb6MLBHXyfla_IJhwmHArkYqyQDPHHu16pZHOZaK5Fk0Ik3sFGU7MIjCAakS/pub?output=csv";
+
+let RAW = [];
+let page = 0;
+let sortCol = null;
+let sortAsc = true;
+const PER = 15;
+let charts = {};
+
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
+  function idx(k) { return headers.findIndex(h => h.includes(k)); }
+  const iSecao = idx('se');
+  const iEsc   = idx('escrit');
+  const iPais  = idx('pa');
+  const iCargo = idx('cargo');
+  const iArea  = idx('rea');
+  const iNivel = idx('vel');
+  const iTipo  = idx('tipo');
+  return lines.slice(1).map(function(line) {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    function g(i) { return (cols[i] || '').replace(/^"|"$/g, '').trim(); }
+    return { secao: g(iSecao), escritorio: g(iEsc), pais: g(iPais), cargo: g(iCargo), area: g(iArea), nivel: g(iNivel), tipo: g(iTipo) };
+  }).filter(function(r) { return r.secao && r.cargo; });
+}
+
+async function loadData() {
+  try {
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    RAW = parseCSV(text);
+    document.getElementById('loading-msg').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    render();
+  } catch(e) {
+    document.getElementById('loading-msg').innerHTML = '<span style="color:#fc745c">Erro ao carregar os dados. Verifique se a planilha está publicada corretamente.</span>';
+  }
+}
+
+function classArea(a) {
+  const l = (a || '').toLowerCase();
+  if (l.includes('conhecimento')) return 'conhecimento';
+  if (l.includes('legal ops') || l.includes('operações jurídicas') || l.includes('controladoria')) return 'legalops';
+  if (l.includes('transforma') || l.includes('change') || l.includes('digital')) return 'transformacao';
+  return 'inovacao';
+}
+
+function descAtuacao(area, cargo) {
+  const a = (area || '').toLowerCase();
+  const c = (cargo || '').toLowerCase();
+  if (a.includes('conhecimento') || c.includes('knowledge')) {
+    if (a.includes('ia') || a.includes('ai') || c.includes('ai') || c.includes('ia')) {
+      return 'Gestão e curadoria do conhecimento jurídico com uso de IA e automação.';
+    }
+    return 'Organização, curadoria e disseminação do conhecimento jurídico interno.';
+  }
+  if (a.includes('legal ops') || a.includes('operações jurídicas') || a.includes('controladoria')) {
+    if (a.includes('inovação') || a.includes('tech')) {
+      return 'Estruturação de processos jurídicos com foco em eficiência operacional e tecnologia.';
+    }
+    return 'Gestão de operações jurídicas, métricas e eficiência de processos internos.';
+  }
+  if (a.includes('transforma') || a.includes('change') || a.includes('digital')) {
+    if (c.includes('change') || c.includes('transforma')) {
+      return 'Gestão de mudanças organizacionais e adoção de novas tecnologias jurídicas.';
+    }
+    return 'Liderança de iniciativas de transformação digital e inovação estratégica.';
+  }
+  if (a.includes('legal tech') || a.includes('automação') || c.includes('legal engineer') || c.includes('ai')) {
+    return 'Desenvolvimento e implementação de soluções tecnológicas e ferramentas de IA jurídica.';
+  }
+  if (a.includes('inovação') || c.includes('innov') || c.includes('inovação')) {
+    return 'Coordenação de projetos de inovação jurídica e mapeamento de tendências.';
+  }
+  if (a.includes('dados') || a.includes('analytics') || c.includes('analytics') || c.includes('data')) {
+    return 'Análise de dados jurídicos para suporte à tomada de decisão estratégica.';
+  }
+  if (a.includes('marketing') || a.includes('comunicação')) {
+    return 'Estratégias de comunicação e marketing jurídico para posicionamento de mercado.';
+  }
+  return 'Atuação em iniciativas de inovação, tecnologia e melhoria de processos jurídicos.';
+}
+
+function isPartnerSocio(r) {
+  const n = (r.nivel || '').toLowerCase();
+  const c = (r.cargo || '').toLowerCase();
+  const palavras = ['partner', 'sócio', 'socio', 'sócia', 'socia', 'founder', 'managing partner'];
+  return palavras.some(function(p) { return n.includes(p) || c.includes(p); });
+}
+
+function matchPais(p, f) {
+  if (f === 'EUA') return p.includes('EUA');
+  if (f === 'Reino Unido') return p.includes('Reino Unido');
+  return p === f;
+}
+
+function filtered() {
+  const s = document.getElementById('fSecao').value;
+  const a = document.getElementById('fArea').value;
+  const p = document.getElementById('fPais').value;
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  return RAW.filter(function(r) {
+    if (isPartnerSocio(r)) return false;
+    if (s !== 'all' && r.secao !== s) return false;
+    if (a !== 'all' && classArea(r.area) !== a) return false;
+    if (p !== 'all' && !matchPais(r.pais, p)) return false;
+    if (q && !r.cargo.toLowerCase().includes(q) && !r.escritorio.toLowerCase().includes(q) && !r.area.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function count(arr, fn) {
+  const m = {};
+  arr.forEach(function(r) { const k = fn(r); m[k] = (m[k] || 0) + 1; });
+  return m;
+}
+
+function topN(obj, n) {
+  return Object.entries(obj).sort(function(a, b) { return b[1] - a[1]; }).slice(0, n);
+}
+
+function mkChart(id, cfg) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), cfg);
+}
+
+function resetFilters() {
+  document.getElementById('fSecao').value = 'all';
+  document.getElementById('fArea').value = 'all';
+  document.getElementById('fPais').value = 'all';
+  document.getElementById('searchInput').value = '';
+  sortCol = null; sortAsc = true;
+  render();
+}
+
+function sortBy(col) {
+  if (sortCol === col) { sortAsc = !sortAsc; } else { sortCol = col; sortAsc = true; }
+  render();
+}
+
+function render() {
+  page = 0;
+  let data = filtered();
+  if (sortCol) {
+    data = data.slice().sort(function(a, b) {
+      const av = a[sortCol] || '', bv = b[sortCol] || '';
+      return sortAsc ? av.localeCompare(bv, 'pt') : bv.localeCompare(av, 'pt');
+    });
+  }
+
+  const vagas = data.filter(function(r) { return r.tipo === 'Vaga divulgada'; }).length;
+  const cargos = data.filter(function(r) { return r.tipo === 'Cargo ocupado'; }).length;
+  const paises = new Set(data.map(function(r) { return r.pais.split('/')[0].trim(); })).size;
+  const escritorios = new Set(data.map(function(r) { return r.escritorio; }).filter(function(e) { return e !== 'Não identificado'; })).size;
+
+  document.getElementById('k1').textContent = data.length;
+  document.getElementById('k1s').textContent = 'de ' + RAW.length + ' registros totais';
+  document.getElementById('k2').textContent = vagas;
+  document.getElementById('k2s').textContent = 'nacionais e internacionais';
+  document.getElementById('k3').textContent = cargos;
+  document.getElementById('k3s').textContent = 'mapeados no mercado';
+  document.getElementById('k5').textContent = escritorios;
+  document.getElementById('k5s').textContent = 'escritórios únicos';
+  document.getElementById('k4').textContent = paises;
+  document.getElementById('k4s').textContent = 'regiões identificadas';
+
+  const secLabels = ['VAGA NACIONAL','VAGA INTERNACIONAL','CARGO OCUPADO NACIONAL','CARGO OCUPADO INTERNACIONAL'];
+  const secColors = ['#00b2ff','#b2bab9','#444444','#fc745c'];
+  const secShort  = ['Vaga Nac.','Vaga Int.','Cargo Nac.','Cargo Int.'];
+  const secMap = count(data, function(r) { return r.secao; });
+  mkChart('cSecao', { type:'doughnut', data:{ labels:secShort, datasets:[{ data:secLabels.map(function(s){ return secMap[s]||0; }), backgroundColor:secColors, borderWidth:0 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom', labels:{ font:{size:11}, boxWidth:10, padding:10 } } } } });
+
+  const areaMap = {};
+  data.forEach(function(r) {
+    const k = classArea(r.area);
+    const label = k==='inovacao'?'Inovação / Legal Tech / IA':k==='legalops'?'Legal Operations / Processos':k==='conhecimento'?'Gestão do Conhecimento':'Transformação / Change';
+    areaMap[label] = (areaMap[label] || 0) + 1;
+  });
+  const areaEntries = Object.entries(areaMap).sort(function(a,b){ return b[1]-a[1]; });
+  const aColors = ['#00b2ff','#444444','#fc745c','#b2bab9'];
+  document.getElementById('lgArea').innerHTML = areaEntries.map(function(e,i){ return '<span><span class="dot" style="background:'+aColors[i%4]+'"></span>'+e[0].split('/')[0].trim()+'</span>'; }).join('');
+  mkChart('cArea', { type:'bar', data:{ labels:areaEntries.map(function(e){ return e[0].length>24?e[0].slice(0,24)+'…':e[0]; }), datasets:[{ data:areaEntries.map(function(e){ return e[1]; }), backgroundColor:aColors, borderRadius:4 }] }, options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:11}}},y:{ticks:{font:{size:11}}}} } });
+
+  const paisNorm = function(r) { return r.pais.split('/')[0].trim(); };
+  const paisMap = count(data, paisNorm);
+  const paisTop = topN(paisMap, 6);
+  const pColors = ['#00b2ff','#444444','#fc745c','#b2bab9','#86c96e','#f5c842'];
+  document.getElementById('lgPais').innerHTML = paisTop.map(function(e,i){ return '<span><span class="dot" style="background:'+pColors[i]+'"></span>'+e[0]+'</span>'; }).join('');
+  mkChart('cPais', { type:'bar', data:{ labels:paisTop.map(function(e){ return e[0]; }), datasets:[{ data:paisTop.map(function(e){ return e[1]; }), backgroundColor:pColors, borderRadius:4 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:11}},grid:{display:false}},y:{ticks:{font:{size:11}}}} } });
+
+  function nivelGroup(r) {
+    const n = (r.nivel || '').toLowerCase();
+    if (!n || n === 'não confirmado') return 'Não informado';
+    if (n.includes('diretor') || n.includes('director') || n.includes('chief') || n.includes('head')) return 'Diretor/Head';
+    if (n.includes('gerente') || n.includes('manager') || n.includes('coordenador') || n.includes('líder')) return 'Gerente/Coord.';
+    if (n.includes('sênior') || n.includes('senior') || n.includes('pleno') || n.includes('specialist') || n.includes('especialista') || n.includes('consultor')) return 'Sênior/Especialista';
+    if (n.includes('analista') || n.includes('advogado') || n.includes('advogada')) return 'Analista/Advogado';
+    if (n.includes('assist') || n.includes('auxiliar') || n.includes('junior')) return 'Assistente/Junior';
+    return 'Outros';
+  }
+  const nvMap = count(data, nivelGroup);
+  const nvOrder = ['Diretor/Head','Gerente/Coord.','Sênior/Especialista','Analista/Advogado','Assistente/Junior','Outros','Não informado'];
+  const nvData = nvOrder.map(function(k){ return nvMap[k]||0; });
+  const nvColors = ['#444444','#fc745c','#00b2ff','#b2bab9','#1a6b00','#888','#ccc'];
+  document.getElementById('lgNivel').innerHTML = nvOrder.filter(function(_,i){ return nvData[i]>0; }).map(function(k,i){ return '<span><span class="dot" style="background:'+nvColors[i]+'"></span>'+k+'</span>'; }).join('');
+  mkChart('cNivel', { type:'bar', data:{ labels:nvOrder, datasets:[{ data:nvData, backgroundColor:nvColors, borderRadius:4 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{font:{size:9},maxRotation:40}},y:{ticks:{font:{size:11}}}} } });
+
+  window._filteredData = data;
+  renderTable();
+}
+
+function tipoBadge(t) { return t === 'Vaga divulgada' ? 'badge-vaga' : 'badge-cargo'; }
+function secBadge(s) { return s.includes('NACIONAL') ? 'badge-nac' : 'badge-int'; }
+
+function renderTable() {
+  const data = window._filteredData || [];
+  const start = page * PER;
+  const slice = data.slice(start, start + PER);
+  document.getElementById('countLabel').textContent = data.length + ' registros';
+  document.getElementById('pageInfo').textContent = 'Mostrando ' + (data.length ? start + 1 : 0) + ' a ' + Math.min(start + PER, data.length) + ' de ' + data.length;
+  document.getElementById('btnPrev').disabled = page === 0;
+  document.getElementById('btnNext').disabled = (page + 1) * PER >= data.length;
+
+  if (!slice.length) {
+    document.getElementById('tBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem">Nenhum registro encontrado.</td></tr>';
+    return;
+  }
+
+  document.getElementById('tBody').innerHTML = slice.map(function(r) {
+    return '<tr>' +
+      '<td><span class="badge ' + secBadge(r.secao) + '">' + (r.secao.includes('VAGA') ? 'Vaga' : 'Cargo') + ' ' + (r.secao.includes('NACIONAL') ? 'Nac.' : 'Int.') + '</span></td>' +
+      '<td style="font-weight:500;white-space:nowrap" title="' + r.escritorio + '">' + r.escritorio + '</td>' +
+      '<td style="white-space:nowrap">' + r.pais.split('/')[0].trim() + '</td>' +
+      '<td class="td-cargo" title="' + r.cargo + '">' + r.cargo + '</td>' +
+      '<td style="font-size:11px;color:var(--muted);white-space:nowrap" title="' + r.area + '">' + r.area.split('/')[0].trim() + '</td>' +
+      '<td style="font-size:12px;color:var(--muted);white-space:nowrap">' + (r.nivel || '—') + '</td>' +
+      '<td><span class="badge ' + tipoBadge(r.tipo) + '">' + (r.tipo === 'Vaga divulgada' ? 'Vaga' : 'Cargo') + '</span></td>' +
+      '<td class="td-atuacao">' + descAtuacao(r.area, r.cargo) + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function changePage(d) {
+  const data = window._filteredData || [];
+  const max = Math.ceil(data.length / PER) - 1;
+  page = Math.max(0, Math.min(max, page + d));
+  renderTable();
+  document.getElementById('registros').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+loadData();
+</script>
+</body>
+</html>
